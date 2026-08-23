@@ -103,3 +103,58 @@ const users = [
 // };
 
 // console.log(statusCount(users));
+
+// async function getUser(id) {
+//   const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
+//   if (!res.ok) throw new Error(`Failed: ${res.status}`);
+//   return res.json();
+// }
+
+//? 1
+// getUser(1)
+//   .then((user) => console.log(user))
+//   .catch((err) => console.log(err));
+
+//? 2 3
+// async function main(num) {
+//   try {
+//     const data = await getUser(num);
+//     console.log(data);
+//   } catch (err) {
+//      console.log(err);
+//   }
+// }
+// main(9999)
+
+//? 4
+// Promise.all([getUser(1),getUser(3),getUser(3)]).then((data)=> console.log(data))
+
+//? 5
+// for (let i = 1; i <= 3; i++) {
+//   try {
+//     const user = await getUser(i);
+//     console.log(user);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
+//  because it will wait for each request to complete before starting the next one.
+
+async function getUserSafe(id) {
+  try {
+    const user = await getUser(id);
+    return { data: user, error: null };
+  } catch (err) {
+    return { data: null, error: err.message };
+  }
+}
+
+async function main() {
+  const { data, error } = await getUserSafe(1);
+  if (error) {
+    console.log("Something went wrong:", error);
+  } else {
+    console.log(data);
+  }
+}
+main();
