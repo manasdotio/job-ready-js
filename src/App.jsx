@@ -1,41 +1,35 @@
-import { useState } from "react";
-import "./App.css";
+import { useState, useEffect } from "react";
 
-function Counter() {
-  const [count, setCount] = useState(0);
-  const [isOn, setIsOn] = useState(true);
-  const [text, setText] = useState("");
-  const [fruits, setFruits] = useState(["apple", "banana", "mango", "grape"]);
+function Users() {
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data) => {
+        setUsers(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setIsLoading(false);
+      });
+  }, []); // empty array = run once on mount
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
-    <>
-      <div>
-        <p>{count}</p>
-        <button onClick={() => setCount((prev) => prev + 1)}>+</button>
-        <button onClick={() => setCount((prev) => prev - 1)}>-</button>
-      </div>
-      <button onClick={() => setIsOn((perv) => !perv)}>
-        {isOn == true ? "On" : "Off"}
-      </button>
-      <input
-        type="text "
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-      <p>{text}</p>
-      <ul>
-        {fruits.map((fruit) => (
-          <li key={fruit}>
-            {fruit}
-            <button
-              onClick={() => setFruits(fruits.filter((f) => f !== fruit))}
-            >
-              ×
-            </button>
-          </li>
-        ))}
-      </ul>
-    </>
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
   );
 }
-
-export default Counter;
+export default Users
